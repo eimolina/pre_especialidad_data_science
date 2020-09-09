@@ -1,0 +1,4 @@
+var links = document.querySelectorAll('li.level1');
+for(var i = 0; i<links.length; i++){
+    console.log(links[i].firstChild.href);
+}
