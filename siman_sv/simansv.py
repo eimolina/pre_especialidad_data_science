@@ -40,7 +40,7 @@ for link in sources.links_sv:
     
     temp_departamento = departamento
     currentPage = 1
-    driver.get(link+'?fuzzy=0&operator=and&page='+str(currentPage))
+    driver.get(link+'?page='+str(currentPage))
     time.sleep(5)
     #page_history = []
     #page_history.append(0)
@@ -55,7 +55,7 @@ for link in sources.links_sv:
                 item = []
                 link_articulo = urllib.parse.unquote(__articulos__[i].get_attribute('href'))
                 art_key = link_articulo[21:len(link_articulo)-2]
-                __producto__ = driver.execute_script("return __STATE__['Product:"+art_key+"']")
+                __producto__ = driver.execute_script("return __STATE__['Product:sae-productSearch-"+art_key+"']")
                 categorias_str = __producto__["categories"]["json"][0]
                 categorias = categorias_str[1:len(categorias_str)-2].split('/')
                 pId = __producto__["productId"]
@@ -63,14 +63,14 @@ for link in sources.links_sv:
                 name = __producto__["productName"]
                 desc = __producto__["description"]
                 marca = __producto__["brand"]
-                precio_lista_max = driver.execute_script("return __STATE__['$Product:"+art_key+".priceRange.listPrice']['highPrice']")
-                precio_lista_min = driver.execute_script("return __STATE__['$Product:"+art_key+".priceRange.listPrice']['lowPrice']")
-                precio_venta_max = driver.execute_script("return __STATE__['$Product:"+art_key+".priceRange.sellingPrice']['highPrice']")
-                precio_venta_min = driver.execute_script("return __STATE__['$Product:"+art_key+".priceRange.sellingPrice']['lowPrice']")
+                precio_lista_max = driver.execute_script("return __STATE__['$Product:sae-productSearch-"+art_key+".priceRange.listPrice']['highPrice']")
+                precio_lista_min = driver.execute_script("return __STATE__['$Product:sae-productSearch-"+art_key+".priceRange.listPrice']['lowPrice']")
+                precio_venta_max = driver.execute_script("return __STATE__['$Product:sae-productSearch-"+art_key+".priceRange.sellingPrice']['highPrice']")
+                precio_venta_min = driver.execute_script("return __STATE__['$Product:sae-productSearch-"+art_key+".priceRange.sellingPrice']['lowPrice']")
                 genero = None
                 modelo = None
                 for pindex in range(len(__producto__["properties"])):
-                    __property__ = driver.execute_script("return __STATE__['Product:"+art_key+".properties."+str(pindex)+"']")
+                    __property__ = driver.execute_script("return __STATE__['Product:sae-productSearch-"+art_key+".properties."+str(pindex)+"']")
                     if __property__["name"] == "Género":
                         genero = __property__["values"]["json"][0]
                     if __property__["name"] == "Modelo":
@@ -99,7 +99,7 @@ for link in sources.links_sv:
         nexpage = driver.find_elements_by_css_selector('div.vtex-search-result-3-x-buttonShowMore button')
         if len(nexpage) > 0:
             currentPage+=1
-            driver.get(link+'?fuzzy=0&operator=and&page='+str(currentPage))
+            driver.get(link+'?page='+str(currentPage))
             time.sleep(4)
             __articulos__ = driver.find_elements_by_css_selector('a.vtex-product-summary-2-x-clearLink')
         else:
