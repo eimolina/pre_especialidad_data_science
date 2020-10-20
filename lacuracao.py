@@ -13,8 +13,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
-from core import utecdatacore as PROYECT_CORE
-from core import config
+from lacuracao import lacuracao_module as PROYECT_CORE
+import config
 #from bs4 import BeautifulSoup
 
 curacaoqueue = queue.Queue();
