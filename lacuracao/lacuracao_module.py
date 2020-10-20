@@ -16,8 +16,6 @@ import requests
 # import queue
 import threading
 from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
@@ -25,22 +23,6 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import JavascriptException
 from selenium.common.exceptions import NoSuchElementException
 # from selenium.webdriver.common.action_chains import ActionChains
-
-class WebDriverCuracaoInnerJson:
-    def __init__(self):
-        pass
-        
-    def processItem(self,driver,data):
-        self.driver = driver
-        return "hola"
-
-class WebDriverCuracaoItem:
-    def __init__(self):
-        pass
-        
-    def processItem(self,driver,data):
-        self.driver = driver
-        return "hola"
     
 class BeautifulSoupCuracaoItem:
     def __init__(self):
@@ -99,51 +81,23 @@ class WebDriverProccessTask(threading.Thread):
             data = self.queue.get()
             producto = None
             try:
-                if type(self.handle) in(WebDriverCuracaoItem,WebDriverCuracaoInnerJson):
-                    #Abre la url en el driver
-                    self.driver.get(data[0])
-                    producto = self.handle.processItem(self.driver,data)
-                elif type(self.handle) is BeautifulSoupCuracaoItem:
-                    req = requests.get(data[0])
-                    producto = self.handle.processItem(req.text,data)
-                    #Coloca el codigo fuente en la salida
-                    self.result.append(producto)
-                    #avisa que la tarea termino
-                    self.queue.task_done()
+                req = requests.get(data[0])
+                producto = self.handle.processItem(req.text,data)
+                #Coloca el codigo fuente en la salida
+                self.result.append(producto)
+                #avisa que la tarea termino
+                self.queue.task_done()
             except JavascriptException: 
                 print('ended thread') 
             finally:
                 print(self.queue.qsize())
                 
-                
-
-def web_driver_process_inner_json(links_categorias, container_queue):
-    product_result = [];
-    for i in range(3): #NUMERO DE HILOS
-        caps = DesiredCapabilities().CHROME
-        caps["pageLoadStrategy"] = "eager"  #['eager','normal','none']
-        driver = webdriver.Chrome(desired_capabilities=caps, executable_path=r"./chromedriver.exe")
-        handle = WebDriverCuracaoInnerJson()
-        hilo = WebDriverProccessTask(container_queue,product_result,driver,handle)
-        hilo.setDaemon(True)
-        hilo.start()        
-        print("Started webdriver: --- "+str(i)+" --- from main")
-    #Pone en cola las urls
-    for cat in links_categorias:
-        container_queue.put(cat)
-    container_queue.join()
-    return product_result
     
 def web_driver_process_individual_items(links_categorias, driver, container_queue):
     products = []
     for i in range(8): #NUMERO DE HILOS
         handle = BeautifulSoupCuracaoItem()
-        child_driver = None
-        if type(handle) in(WebDriverCuracaoItem,WebDriverCuracaoInnerJson):
-            caps = DesiredCapabilities().CHROME
-            caps["pageLoadStrategy"] = "eager"  #['eager','normal','none']
-            child_driver = webdriver.Chrome(desired_capabilities=caps, executable_path=r"./chromedriver.exe")     
-        hilo = WebDriverProccessTask(container_queue,products,child_driver,handle)
+        hilo = WebDriverProccessTask(container_queue,products,None,handle)
         hilo.setDaemon(True)
         hilo.start()        
         print("Started webdriver: --- "+str(i)+" --- from main")
