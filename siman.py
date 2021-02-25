@@ -13,27 +13,29 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
-from core import utecdatacore as PROYECT_CORE
-from core import config
-#from bs4 import BeautifulSoup
+from siman import siman_module as PROYECT_CORE
+from selenium.webdriver.chrome.options import Options
+import config
+import time
 
-curacaoqueue = queue.Queue();
-caps = DesiredCapabilities().CHROME
-caps["pageLoadStrategy"] = "eager"  #['eager','normal','none']
-principal_driver = webdriver.Chrome(desired_capabilities=caps, executable_path=r"./chromedriver.exe")
-temp_departamento = None
+chrome_options = Options()  
+chrome_options.add_argument("--headless")
+chrome_options.add_argument("--window-size=1500,1000")
+simanqueue = queue.Queue();
+principal_driver = webdriver.Chrome(executable_path=r"./chromedriver.exe",options=chrome_options)
 today = date.today()
-principal_driver.get('https://www.lacuracaonline.com/elsalvador/')
+principal_driver.get('https://sv.siman.com/')
+time.sleep(5)
 try:
-    element = WebDriverWait(principal_driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, "span.action.nav-toggle.desktop.enabled")))
+    element = principal_driver.find_element_by_class_name("vtex-menu-2-x-styledLinkContainer--title-menu-departament")
     hover = ActionChains(principal_driver).move_to_element(element)
     hover.perform()
-    elem_a_categories = principal_driver.find_elements(By.CSS_SELECTOR,"li.level2.ui-menu-item > a");
-    links_categories = [elem.get_attribute('href') for elem in elem_a_categories] 
-    cleaned_links = [i for i in links_categories if "yomequedoencasa" not in i and "promociones" not in i]
-    products = PROYECT_CORE.web_driver_process_individual_items(cleaned_links,principal_driver,curacaoqueue)
+    links_elementes = WebDriverWait(principal_driver, 20).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "vtex-menu-2-x-styledLink--title-menu-sub-cat")))
+    links_sv = [elem.get_attribute('href') for elem in links_elementes] 
+    cleaned_links = [i for i in links_sv if i] 
+    products = PROYECT_CORE.web_driver_process_inner_json(cleaned_links,simanqueue)
     df = pd.DataFrame(products, columns=config.columns)
-    df.to_csv('lacuracao.csv', encoding='utf-8-sig')
+    df.to_csv('siman.csv', encoding='utf-8-sig')
 finally:
     principal_driver.quit()
                 

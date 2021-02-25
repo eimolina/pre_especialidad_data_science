@@ -25,7 +25,7 @@ temp_departamento = None
 today = date.today()
 principal_driver.get('https://www.lacuracaonline.com/elsalvador/')
 try:
-    element = WebDriverWait(principal_driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, "span.action.nav-toggle.desktop.enabled")))
+    element = WebDriverWait(principal_driver, 40).until(EC.presence_of_element_located((By.CSS_SELECTOR, "span.action.nav-toggle.desktop.enabled")))
     hover = ActionChains(principal_driver).move_to_element(element)
     hover.perform()
     elem_a_categories = principal_driver.find_elements(By.CSS_SELECTOR,"li.level2.ui-menu-item > a");

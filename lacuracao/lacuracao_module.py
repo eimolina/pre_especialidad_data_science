@@ -22,6 +22,7 @@ from selenium.webdriver.common.by import By
 # from selenium.common.exceptions import StaleElementReferenceException
 from selenium.common.exceptions import JavascriptException
 from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import TimeoutException
 # from selenium.webdriver.common.action_chains import ActionChains
     
 class BeautifulSoupCuracaoItem:
@@ -95,7 +96,7 @@ class WebDriverProccessTask(threading.Thread):
     
 def web_driver_process_individual_items(links_categorias, driver, container_queue):
     products = []
-    for i in range(8): #NUMERO DE HILOS
+    for i in range(3): #NUMERO DE HILOS
         handle = BeautifulSoupCuracaoItem()
         hilo = WebDriverProccessTask(container_queue,products,None,handle)
         hilo.setDaemon(True)
