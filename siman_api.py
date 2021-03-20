@@ -80,7 +80,6 @@ def proccessObjectProducts(result_container, json_response):
         item.append(genero.upper().strip() if genero is not None else 'N/A') #GENERO
         result_container.append(item)
         print("Articulo -> "+ str(len(result_container)))
-
     
 
 class APIProccessTask(threading.Thread):
@@ -129,14 +128,15 @@ def buildUrl(desde, hasta, query, mapp):
             "selectedFacets":facets,
             "operator":"and","fuzzy":"0","facetsBehavior":"Static","withFacets":False}
     filtrosb64 = base64.urlsafe_b64encode(json.dumps(filters).encode()).decode()
-    url = "https://sv.siman.com/_v/segment/graphql/v1?workspace=master&maxAge=short&appsEtag=remove&domain=store&locale=es-SV&__bindingId=a64d5203-0c28-49c6-8bcb-f7cfe303e32f&operationName=productSearchV3&variables={}&extensions={%22persistedQuery%22:{%22version%22:1,%22sha256Hash%22:%2289389dc09892c961bfea39a700388f5c846f3de00f4ccb31e07cccaeb655d6ef%22,%22sender%22:%22vtex.store-resources@0.x%22,%22provider%22:%22vtex.search-graphql@0.x%22},%22variables%22:%22"+ filtrosb64 +"%22}"
+    url = "https://sv.siman.com/_v/segment/graphql/v1?workspace=master&maxAge=short&appsEtag=remove&domain=store&locale=es-SV&__bindingId=a64d5203-0c28-49c6-8bcb-f7cfe303e32f&operationName=productSearchV3&variables={}&extensions={%22persistedQuery%22:{%22version%22:1,%22sha256Hash%22:%2279856e9e1696c9936223883a8769d932ad0ef09cc7f08f05488e7ceb8301ecec%22,%22sender%22:%22vtex.store-resources@0.x%22,%22provider%22:%22vtex.search-graphql@0.x%22},%22variables%22:%22"+ filtrosb64 +"%22}"
     return url
 
 try:
     element = principal_driver.find_element_by_class_name("vtex-menu-2-x-styledLinkContainer--title-menu-departament")
     hover = ActionChains(principal_driver).move_to_element(element)
     hover.perform()
-    links_elementes = WebDriverWait(principal_driver, 20).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "vtex-menu-2-x-styledLink--title-menu-sub-cat")))
+    #links_elementes = WebDriverWait(principal_driver, 20).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "vtex-menu-2-x-styledLink--title-menu-sub-cat")))
+    links_elementes = WebDriverWait(principal_driver, 20).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "vtex-menu-2-x-styledLink--menu-cols")))
     links_sv = [elem.get_attribute('href') for elem in links_elementes] 
     cleaned_links = [i for i in links_sv if i]
     departamentos = []
